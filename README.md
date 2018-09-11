@@ -42,8 +42,8 @@ A *binding* is an association of two things, such as:
 * *Link time*: final bindings of names to addresses
 * *Load time*: physical addresses (can change during run time)
 * *Run time*: bindings of variables to values, includes many bindings
-    which change during execution such as function parameters to the
-    passed argument values.
+    which change during execution such as the binding of function
+    parameters to the passed argument values.
  
 *Static binding* means before run time; *Dynamic binding* means
  during run time.
@@ -120,7 +120,7 @@ determined at compile time (exceptions include earlier versions of Fortran).
 
 Some features that require dynamic memory allocation:
 * Recursive functions
-* Pointers, explicit allocation (e.g., +new+, +malloc+)
+* Pointers, explicit allocation (e.g., `new`, `malloc`)
 * First-class functions
 
 We distinguish *stack-based* and *heap-based* dynamic allocation.
@@ -143,7 +143,7 @@ Objects in the activation record may include:
 
 Some objects may not follow a LIFO discipline, e.g.
 
-* objects allocated with \lstinline|new|,
+* objects allocated with `new`, `malloc`,
 * the contents of local variables and parameters in functional languages.
 
 The lifetime of these objects may be longer than the lifetime of the
@@ -239,8 +239,8 @@ the variable `x` declared on line 1. So the program will print `1`,
 
 If Scala were to use dynamic scoping, the occurrence of `x` on line 3
 will always refer to the most recent binding of `x` before `f` is
-called. For the first call to `f` on line `13` this is `x` on line
-1. For the call to `f` via `g`, it is `x` on line 5 and for the call
+called. For the first call to `f` on line `13` this is `x` on line 1. 
+For the call to `f` via `g`, it is `x` on line 5 and for the call
 to `f` via `h`, it is `x` on line 9. So in this case the program will
 print `1`, `10`, and `100`.
 
@@ -272,7 +272,7 @@ Scope qualifiers can be nested, e.g. `A.B.x` refers to the binding of
 `x` in nested scope `B` of scope `A`. Qualified names are typically
 interpreted relative to the scope in which they occur (respectively,
 the global scope). For instance a qualified name `B.C.x` that occurs
-in scope `A` may refer to `A.B.C.x` or `B.C.x` relative to the global
+in scope `A` may refer to (1) `A.B.C.x` or (2) `B.C.x` relative to the global
 scope.
 
 Some languages allow bindings of other named scopes to be imported
@@ -295,12 +295,12 @@ into the current scope so that they can be referred to without qualifiers
 
 Often, the visibility of bindings of names whose scope is outside of
 the path to the current scope can be restricted using *visibility
-modifiers* (e.g. `public`, `protected`, and `private` in Java).
+modifiers* (e.g. `public`, `protected`, and `private`).
 
-Nested subroutines as they are supported by languages like Ada
-introduce some extra complexity to indentify the correct
-binding. Specifically, how does a nested subroutine find the right
-binding for an object in an outer scope?
+Some languages, such as Ada, support nested subroutines, which
+introduce some extra complexity to identify the correct
+bindings. Specifically, how does a nested subroutine find the right
+binding for an object declared in an outer scope?
 
 Solution:
 * Maintain a *static link* to the *parent frame*
@@ -327,20 +327,18 @@ What is the scope of `x` in the following code snippet?
 }
 ```
 
-* C, C++, Ada, Java: +statements2+
+* C, C++, Ada, Java: `statements2`
 * JavaScript, Modula3: entire block
-* Pascal, Scala: entire block, but not allowed to be used in *statements1*!
+* Pascal, Scala: entire block, but not allowed to be used in `statements1`!
 
 C and C++ require names to be declared before they are used. This
-requires a special mechanism for recursive data types.
+requires a special mechanism for recursive data types, which is to
+separate the *declaration* from the *definition* of a name:
 
-C and C++ solve the problem by separating *declaration* from
-*definition*.
+* A *declaration* introduces a name and indicates the scope of the name.
+* A *definition* describes the object to which the name is bound.
 
-* A *declaration* introduces a name and indicates the scope of the name
-* A *definition* describes the object to which the name is bound
-
-Example of a recursive data type in C++
+Example of a recursive data type in C++:
 
 ```c++
 struct manager;              // Declaration
@@ -358,9 +356,8 @@ struct manager {             // Definition
 
 ### Redeclaration
 
-Some languages (in particular, interpreted languages) allow names to
-be *redeclared*, creating a new binding for a name that was already
-given a binding in the same scope.
+Some languages (in particular, interpreted ones) allow names to
+be *redeclared* within the same scope.
 
 ```javascript
 function addx(x) { return x + 1; }
@@ -371,7 +368,7 @@ function add2(x) {
   return x;
 }
 
-function addx(x) { return x + x; }
+function addx(x) { return x + x; } // Redeclaration of addx
 ```
 
 What happens if we call `add2(2)`?
@@ -379,9 +376,10 @@ What happens if we call `add2(2)`?
 In most languages that support redeclaration, the new definition
 replaces the old one in all contexts, so we would get `8`.
 
-In ML-variants like OCaml, the new binding only applies to later uses
-of the name, not previous uses. For example, the corresponding OCaml
-code of the above example would give 4.
+In languages of the ML family like OCaml, the new binding only applies
+to later uses of the name, not previous uses. For example, the
+corresponding OCaml code of the above example would yield the value
+`4` instead of `8`.
 
 
 ## Scala Intro
@@ -429,6 +427,12 @@ but installing it installs a number of useful Unix command line tools.
    ```git config --global user.name "Your Name"```<br>
    (The email should be the same email you used to register your github account)
 
+Here are some Git-related resources:
+* If you are unfamiliar with Git, watch the [first two git basics video](http://git-scm.com/videos).
+* If you are unfamiliar with Github, watch [this YouTube video](https://www.youtube.com/watch?v=0fKg7e37bQE).
+* A [simple git cheatsheet](http://rogerdudler.github.io/git-guide/).
+* A [complete reference](http://www.git-scm.com/book/en/v2).
+* I suggest using the command line or the IntelliJ integration to interact with Git, but in a pinch [this GUI](https://desktop.github.com/) might be useful.
 
 #### Sbt
 
@@ -446,17 +450,20 @@ will need this to run Scala code that I provide)
     ```sbt    ```
     (Sbt should start. Use `Ctrl+c` to quit or type `exit`.)
 
-** More detailed instructions can be found [here](http://www.scala-sbt.org/release/tutorial/Installing-sbt-on-Linux.html).
+More detailed instructions can be found [here](http://www.scala-sbt.org/release/tutorial/Installing-sbt-on-Linux.html).
 
 #### IntelliJ Idea
 
 I will be using
 the [IntelliJ Idea Java IDE](https://www.jetbrains.com/idea/) to
 demonstrate Scala and Java code in class. While it is not necessary
-for you to install IntelliJ, I recommend using it as it will make your
+for you to install an IDE, I recommend using it as it will make your
 life easier.
 
-* Sign up for [free student licenses](https://www.jetbrains.com/shop/eform/students) (Reminder: use your NYU email)
+* Sign up
+  for
+  [free student licenses](https://www.jetbrains.com/shop/eform/students) (Reminder:
+  use your NYU email address)
 * In the meantime, download the [Ultimate Edition Free 30-day trial](https://www.jetbrains.com/idea/download/) of Intellij.
 * [Ubuntu] Untar the downloaded archive by clicking it and then using the "Extract" menu item. Extract to location of your choice. Open that location and follow the instructions inside the "Install-Linux-tar.txt" file.
 * [OSX] Open the disk image and use the installer.
@@ -467,11 +474,17 @@ life easier.
   Scala support in Intellij.
 * For reference, here is a link to the [Intellij documentation](https://www.jetbrains.com/idea/help/basic-concepts.html).
 
-There are many many free plugins available for Intellij. You should feel free to install anything that sounds useful to you. You can explore what is available from the "Preferences" menu in Intellij.
+There are many free plugins available for Intellij. You should feel free to install anything that sounds useful to you. You can explore what is available from the "Preferences" menu in Intellij.
 
 #### Importing a Scala Sbt Project into Intellij
 
 To import the Scala sbt project for Class 2 into Intellij, do the following:
+
+* Choose a place on your computer for your project files to reside and open a terminal to that location.
+
+* Clone this repository from Github by executing the following git
+  command in your terminal: <br/>
+  ```git clone https://github.com/nyu-pl-fa18/class02.git```
 
 * Open Intellij and click the "Import Project" menu item
   (Alternatively, press Ctrl+Shift+a [Ubuntu] or Command+Shift+a [OSX]
