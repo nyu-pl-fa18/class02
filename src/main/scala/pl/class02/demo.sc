@@ -3,7 +3,7 @@
   
   {
     //println(x)
-    val x = 3
+    val x = 3 + 6
     println(x)
   }
   

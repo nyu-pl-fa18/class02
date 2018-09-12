@@ -23,7 +23,7 @@ easier:
 
 * Abstraction reduces conceptual complexity by hiding irrelevant details
 * Names for subroutines: *control abstraction*
-* Names for classes: *data abstraction*
+* Names for types/classes: *data abstraction*
 
 ## Bindings
 
@@ -45,17 +45,17 @@ A *binding* is an association of two things, such as:
     which change during execution such as the binding of function
     parameters to the passed argument values.
  
-*Static binding* means before run time; *Dynamic binding* means
- during run time.
+*Static binding* (aka *early binding*) means before run time; *Dynamic
+ binding* (aka *late binding*) means during run time.
 
-What are some advantages of early binding times?
+What are some advantages of static binding times?
 
 * *Efficiency*: the earlier decisions are made, the more optimizations are
   available to the compiler.
 
-* *Ease of implementation*: Earlier binding makes compilation easier.
+* *Ease of implementation*: Static binding makes compilation easier.
 
-What are some advantages of late binding times?
+What are some advantages of dynamic binding times?
 
 * *Flexibility*: Languages that allow postponing binding give more
   control to programmer
@@ -141,15 +141,23 @@ Objects in the activation record may include:
 * Temporary variables
 * Miscellaneous bookkeeping information
 
+Even in a program that does not use recursion, the number of
+subroutines that are active at the same time at any point during
+program execution is typically much smaller than the total number of
+subroutines in the program. So even for those programs, it is usually
+beneficial to use a stack for allocating memory for activation
+records, rather than allocating that space statically.
+
 Some objects may not follow a LIFO discipline, e.g.
 
 * objects allocated with `new`, `malloc`,
 * the contents of local variables and parameters in functional languages.
 
 The lifetime of these objects may be longer than the lifetime of the
-subroutine in which they were created. These are allocated on the
-*heap*: a section of memory set aside for such objects (not to be
-confused with the data structure for implementing priority queues).
+subroutine in which they were created. These objects are therefore
+allocated on the *heap*: a section of memory set aside for such
+objects (not to be confused with the data structure for implementing
+priority queues).
 
 The heap is finite: if we allocate too many objects, we will run out of space.
 
@@ -174,19 +182,31 @@ Manual deallocation is a common source of bugs:
 * Dangling references
 * Memory leaks
 
-We will discuss memory management in more detail later.
+We will discuss automatic memory management in more detail
+later. However, it is helpful to understand how allocation and
+deallocation requests by the program are implemented.
 
-The heap starts out as a single block of memory. As objects are
+Ultimately, a program's requests for fresh heap memory are relayed to
+the operating system via system calls. The operating in turn grants
+the program access to memory blocks that it can use to store its
+dynamically allocated objects. Since system calls are expensive, the
+program's memory management subsystem usually requests large memory
+blocks from the operating system at a time which it then manages
+itself to satisfy dynamic allocation requests for smaller chunks of
+memory that fit into the large block.
+
+The heap thus starts out as a single block of memory. As objects are
 allocated and deallocated, the heap becomes broken into smaller
-blocks, some in use and some not in use.
+subblocks, some in use and some not in use.
 
 Most heap-management algorithms make use of a *free list*: a singly
 linked list containing blocks not in use.
 
-* *Allocation*: a search is done to find a free block of adequate size
+* *Allocation*: a search is done through the free list to find a free
+  block of adequate size. Two possible algorithms:
   * *First fit*: first available block is taken
   * *Best fit*: all blocks are searched to find the one that fits the best
-* *Deallocation*: the block is put on the free list
+* *Deallocation*: the deallocated block is put back on the free list
 
 *Fragmentation* is an issue that degrades performance of heaps over time:
 * *Internal fragmentation* occurs when the block allocated to an
@@ -194,6 +214,12 @@ linked list containing blocks not in use.
 * *External fragmentation* occurs when unused blocks are scattered
   throughout memory so that there may not be enough memory in any one
   block to satisfy a request.
+
+Some allocation algorithms such as
+the
+[buddy system](https://en.wikipedia.org/wiki/Buddy_memory_allocation)
+are designed to minimize external fragmentation while still being
+efficient.
 
 ## Scope
 
@@ -378,8 +404,20 @@ replaces the old one in all contexts, so we would get `8`.
 
 In languages of the ML family like OCaml, the new binding only applies
 to later uses of the name, not previous uses. For example, the
-corresponding OCaml code of the above example would yield the value
-`4` instead of `8`.
+corresponding OCaml code of the above example looks like this
+
+```ocaml
+let addx x = x + 1
+
+let add2 x =
+  let x1 = addx x in
+  let x2 = addx x1 in
+  x2
+
+let addx x = x + x
+```
+
+Calling `add2` with value `2` now yields `4` instead of `8`.
 
 
 ## Scala Intro
@@ -600,7 +638,7 @@ that the sole purpose of evaluating the expression is the side effect
 of the evaluation (here, printing a message on standard output). In
 other words, in Scala, statements are expressions of type
 `Unit`. Thus, the type `Unit` is similar to the
-type void in Java (which however, has no values). The value
+type `void` in Java, C, and C++ (which however, has no values). The value
 `()` is the only value of type `Unit`. 
 
 #### Names
@@ -629,7 +667,7 @@ scala> x = 5
        x = 5
          ^
 ```
-Scala also has an equivalent to standard Java variables, which can be
+Scala also supports mutable variables, which can be
 reassigned. These are declared with the `var` keyword
 ```scala
 scala> var y = 5
@@ -638,8 +676,7 @@ scala> y = 3
 y: Int = 3
 ```
 The type of a variable is the type inferred from its initialization
-expression. It is fixed throughout the lifetime of the
-variable. Attempting to reassign it to a value of incompatible type results in a type error:
+expression. This type is fixed. Attempting to reassign a variable to a value of incompatible type results in a type error:
 ```scala
 scala> y = "Hello"
 <console>:8: error: type mismatch;
