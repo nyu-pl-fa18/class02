@@ -480,7 +480,7 @@ will need this to run Scala code that I provide)
 
 * [OSX]  From terminal: ```brew install sbt```
 * [Ubuntu] From terminal:<br>
-   ```echo "deb https://dl.bintray.com/sbt/debian/" | sudo tee -a /etc/apt/sources.list.d/sbt.list```<br>
+   ```echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list```<br>
    ```sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823```<br>
    ```sudo apt-get update```<br>
    ```sudo apt-get install sbt```  
