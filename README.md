@@ -355,7 +355,9 @@ What is the scope of `x` in the following code snippet?
 
 * C, C++, Ada, Java: `statements2`
 * JavaScript, Modula3: entire block
-* Pascal, Scala: entire block, but not allowed to be used in `statements1`!
+* Pascal, Scala, C#: entire block, but not allowed to be used in
+  `statements1`! If `x` is used in `statement1`, the compiler will
+  reject the program with a static semantic error.
 
 C and C++ require names to be declared before they are used. This
 requires a special mechanism for recursive data types, which is to
