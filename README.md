@@ -354,7 +354,8 @@ What is the scope of `x` in the following code snippet?
 ```
 
 * C, C++, Ada, Java: `statements2`
-* JavaScript, Modula3: entire block
+* JavaScript, Modula3: entire block, but value of `x` will be
+  undefined when read in `statements1`.
 * Pascal, Scala, C#: entire block, but not allowed to be used in
   `statements1`! If `x` is used in `statement1`, the compiler will
   reject the program with a static semantic error.
